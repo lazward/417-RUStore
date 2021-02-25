@@ -3,6 +3,7 @@ package com.RUStore;
 /* any necessary Java packages here */
 import java.net.*;
 import java.io.*;
+import java.util.* ;
 
 public class RUStoreServer {
 
@@ -10,6 +11,10 @@ public class RUStoreServer {
 
 	private static ServerSocket serverSocket;
 	private static Socket clientSocket;
+	private static PrintWriter out ;
+	private static BufferedReader in ;
+	private static DataInputStream dIn ;
+	private static Hashtable<String, Byte[]> data = new Hashtable<String, Byte[]>() ;
 
 	/* any necessary helper methods here */
 
@@ -34,9 +39,50 @@ public class RUStoreServer {
 		serverSocket = new ServerSocket(port);
 		clientSocket = serverSocket.accept();
 
+		out = new PrintWriter(clientSocket.getOutputStream(), true) ;
+		in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())) ;
+		dIn = new DataInputStream(clientSocket.getInputStream()) ;
+
 		System.out.println("Client connected!");
 
 		clientSocket.close();
+
+		String inputLine ;
+
+		while ((inputLine = in.readLine()) != null) {
+
+			out.println(inputLine) ;
+			switch(inputLine) {
+
+				case "PUT DATA":
+					out.println("KEY?");
+
+					String key = in.readLine() ;
+
+					if (data.containsKey(key)) {
+
+						out.println("EXISTS") ;
+						break ;
+
+					}
+
+					int length = dIn.readInt() ;
+
+					if (length > 0) {
+
+						byte[] data = new byte[length] ;
+						dIn.readFully(data, 0, length) ;
+
+					}
+
+					break ;
+				case "PUT FILE":
+
+					break ;
+
+			}
+
+		}
 
 		System.out.println("Client disconnected!");
 		

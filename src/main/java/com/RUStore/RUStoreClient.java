@@ -9,8 +9,12 @@ public class RUStoreClient {
 	/* any necessary class members here */
 
 	Socket clientSocket;
-	private String h;
-	private int p;
+	private String h; // host ip
+	private int p; // port
+	private PrintWriter out ;
+	private DataOutputStream dOut ;
+	private BufferedReader in ;
+
 
 	/**
 	 * RUStoreClient Constructor, initializes default values for class members
@@ -40,26 +44,53 @@ public class RUStoreClient {
 		// Implement here
 
 		clientSocket = new Socket(h, p);
+		out = new PrintWriter(clientSocket.getOutputStream(), true) ;
+		dOut = new DataOutputStream(clientSocket.getOutputStream()) ;
+		in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())) ;
 
 		System.out.println("Connected!");
 
 	}
 
 	/**
-	 * Sends an arbitrary data object to the object store server. If an
-	 * object with the same key already exists, the object should NOT be
-	 * overwritten
+	 * Sends an arbitrary data object to the object store server. If an object with
+	 * the same key already exists, the object should NOT be overwritten
 	 * 
 	 * @param key  key to be used as the unique identifier for the object
 	 * @param data byte array representing arbitrary data object
 	 * 
-	 * @return		0 upon success
-	 *        		1 if key already exists
+	 * @return 0 upon success 1 if key already exists
+	 * @throws IOException
 	 */
-	public int put(String key, byte[] data) {
+	public int put(String key, byte[] data) throws IOException {
 
 		// Implement here
-		return -1;
+		out.println("PUT DATA") ;
+
+		if (!in.readLine().equals("KEY?")) {
+
+			return -1 ;
+
+		}
+
+		out.println(key) ;
+
+		String response = in.readLine() ;
+
+		if (response.equals("EXISTS")) {
+
+			return 1 ;
+
+		} else if (!response.equals("DATA?")) {
+
+			return -1 ;
+
+		}
+
+		dOut.writeInt(data.length) ;
+		dOut.write(data) ;
+
+		return 0 ;
 
 	}
 
