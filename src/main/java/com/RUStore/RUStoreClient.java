@@ -2,6 +2,7 @@ package com.RUStore;
 
 /* any necessary Java packages here */
 import java.net.*;
+import java.nio.charset.Charset;
 import java.io.*;
 
 public class RUStoreClient {
@@ -12,8 +13,9 @@ public class RUStoreClient {
 	private String h; // host ip
 	private int p; // port
 	private PrintWriter out ;
-	private DataOutputStream dOut ;
+	//private DataOutputStream dOut ;
 	private BufferedReader in ;
+	//private static DataInputStream dIn ;
 
 
 	/**
@@ -45,8 +47,9 @@ public class RUStoreClient {
 
 		clientSocket = new Socket(h, p);
 		out = new PrintWriter(clientSocket.getOutputStream(), true) ;
-		dOut = new DataOutputStream(clientSocket.getOutputStream()) ;
+		//dOut = new DataOutputStream(clientSocket.getOutputStream()) ;
 		in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())) ;
+		//dIn = new DataInputStream(clientSocket.getInputStream()) ;
 
 		System.out.println("Connected!");
 
@@ -65,30 +68,44 @@ public class RUStoreClient {
 	public int put(String key, byte[] data) throws IOException {
 
 		// Implement here
+		System.out.println("writing put data");
 		out.println("PUT DATA") ;
 
-		if (!in.readLine().equals("KEY?")) {
-
-			return -1 ;
-
-		}
-
-		out.println(key) ;
+		System.out.println("wrote, waiting...");
 
 		String response = in.readLine() ;
+		System.out.println("response: " + response);
 
-		if (response.equals("EXISTS")) {
+		if (response.equals("KEY?")) {
 
-			return 1 ;
+			out.println(key) ;
 
-		} else if (!response.equals("DATA?")) {
+			response = in.readLine() ;
+
+			if (response.equals("EXISTS")) {
+
+				System.out.println("Key already exists") ;
+				return 1 ;
+
+			} else if (response.equals("OPEN")) {
+
+				System.out.println("Key does not exist") ;
+				//System.out.println("data length = " + data.length) ;
+				//out.println(data.length) ;
+				out.println(new String(data)) ;
+
+
+			} else { // Invalid response
+
+				return -1 ;
+
+			}
+		
+		} else { // Invalid response
 
 			return -1 ;
 
 		}
-
-		dOut.writeInt(data.length) ;
-		dOut.write(data) ;
 
 		return 0 ;
 
@@ -114,17 +131,19 @@ public class RUStoreClient {
 	}
 
 	/**
-	 * Downloads arbitrary data object associated with a given key
-	 * from the object store server.
+	 * Downloads arbitrary data object associated with a given key from the object
+	 * store server.
 	 * 
 	 * @param key key associated with the object
 	 * 
 	 * @return object data as a byte array, null if key doesn't exist. Throw an
 	 *         exception if any other issues occur.
+	 * @throws IOException
 	 */
-	public byte[] get(String key) {
+	public byte[] get(String key) throws IOException {
 
 		// Implement here
+
 		return null;
 
 	}
@@ -188,6 +207,8 @@ public class RUStoreClient {
 	public void disconnect() throws IOException {
 
 		// Implement here
+
+		out.println("DISCONNECT") ;
 
 		clientSocket.close();
 

@@ -2,6 +2,7 @@ package com.RUStore;
 
 /* any necessary Java packages here */
 import java.net.*;
+import java.nio.charset.Charset;
 import java.io.*;
 import java.util.* ;
 
@@ -12,8 +13,9 @@ public class RUStoreServer {
 	private static ServerSocket serverSocket;
 	private static Socket clientSocket;
 	private static PrintWriter out ;
+	//private static DataOutputStream dOut ;
 	private static BufferedReader in ;
-	private static DataInputStream dIn ;
+	//private static DataInputStream dIn ;
 	private static Hashtable<String, Byte[]> data = new Hashtable<String, Byte[]>() ;
 
 	/* any necessary helper methods here */
@@ -40,49 +42,66 @@ public class RUStoreServer {
 		clientSocket = serverSocket.accept();
 
 		out = new PrintWriter(clientSocket.getOutputStream(), true) ;
+		//dOut = new DataOutputStream(clientSocket.getOutputStream()) ;
 		in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())) ;
-		dIn = new DataInputStream(clientSocket.getInputStream()) ;
+		//dIn = new DataInputStream(clientSocket.getInputStream()) ;
 
 		System.out.println("Client connected!");
 
-		clientSocket.close();
-
 		String inputLine ;
 
-		while ((inputLine = in.readLine()) != null) {
+		while (((inputLine = in.readLine()) != null) && (!inputLine.equals("DISCONNECT"))) {
 
-			out.println(inputLine) ;
+			System.out.println("selection: " + inputLine);
+			
 			switch(inputLine) {
 
-				case "PUT DATA":
-					out.println("KEY?");
+				case "PUT DATA": {
 
+					out.println("KEY?");
 					String key = in.readLine() ;
+					System.out.println("Key = " + key) ;
 
 					if (data.containsKey(key)) {
 
 						out.println("EXISTS") ;
-						break ;
+						System.out.println("Key already exists");
+						// break ;
+
+					} else {
+
+						out.println("OPEN") ;
+	
+							byte[] input = in.readLine().getBytes() ;
+	
+							System.out.println("input length = " + input.length) ;
+	
+							//dIn.readFully(input, 0, size) ;
+	
+							Byte[] bytes = new Byte[input.length] ;
+	
+							for (int i = 0 ; i < bytes.length ; i++) {
+	
+								bytes[i] = input[i] ;
+	
+							}
+	
+							data.put(key, bytes) ;
+	
+						
 
 					}
 
-					int length = dIn.readInt() ;
-
-					if (length > 0) {
-
-						byte[] data = new byte[length] ;
-						dIn.readFully(data, 0, length) ;
-
-					}
 
 					break ;
-				case "PUT FILE":
-
-					break ;
+					
+				}
 
 			}
 
 		}
+
+		clientSocket.close();
 
 		System.out.println("Client disconnected!");
 		
