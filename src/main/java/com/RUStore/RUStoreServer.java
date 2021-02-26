@@ -96,6 +96,41 @@ public class RUStoreServer {
 					break ;
 					
 				}
+				case "GET DATA": {
+
+					out.println("KEY?");
+					String key = in.readLine() ;
+					System.out.println("Key = " + key) ;
+
+					if (data.containsKey(key)) {
+
+						out.println("FOUND") ;
+						System.out.println("Key found");
+
+						Byte[] output = data.get(key) ;
+
+						byte[] bytes = new byte[output.length] ;
+	
+						for (int i = 0 ; i < output.length ; i++) {
+
+							bytes[i] = output[i] ;
+
+						}
+
+						out.println(new String(bytes));
+						
+
+					} else {
+
+						out.println("ABSENT") ;
+						System.out.println("Not found");
+
+					}
+
+					break ;
+
+
+				}
 
 			}
 

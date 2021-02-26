@@ -144,6 +144,36 @@ public class RUStoreClient {
 
 		// Implement here
 
+		System.out.println("writing get data");
+		out.println("GET DATA") ;
+
+		System.out.println("wrote, waiting...");
+
+		String response = in.readLine() ;
+		System.out.println("response: " + response);
+
+		if (response.equals("KEY?")) {
+
+			out.println(key) ;
+
+			response = in.readLine() ;
+
+			if (response.equals("FOUND")) {
+
+				System.out.println("Key exists") ;
+				String data = in.readLine() ;
+				return data.getBytes() ;
+				//return 1 ;
+
+			} else if (response.equals("ABSENT")) {
+
+				System.out.println("Key not found");
+				return null ;
+
+			}
+
+		}
+
 		return null;
 
 	}
