@@ -2,7 +2,8 @@ package com.RUStore;
 
 /* any necessary Java packages here */
 import java.net.*;
-import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.io.*;
 
 public class RUStoreClient {
@@ -12,7 +13,8 @@ public class RUStoreClient {
 	Socket clientSocket;
 	private String h; // host ip
 	private int p; // port
-	private PrintWriter out ;
+	//private PrintWriter out ;
+	private DataOutputStream out ;
 	//private DataOutputStream dOut ;
 	private BufferedReader in ;
 	//private static DataInputStream dIn ;
@@ -46,10 +48,11 @@ public class RUStoreClient {
 		// Implement here
 
 		clientSocket = new Socket(h, p);
-		out = new PrintWriter(clientSocket.getOutputStream(), true) ;
-		//dOut = new DataOutputStream(clientSocket.getOutputStream()) ;
+		//out = new PrintWriter(clientSocket.getOutputStream(), true) ;
+		out = new DataOutputStream(clientSocket.getOutputStream()) ;
+		//dOut = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream())) ;
 		in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())) ;
-		//dIn = new DataInputStream(clientSocket.getInputStream()) ;
+		//dIn = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream())) ;
 
 		System.out.println("Connected!");
 
@@ -69,7 +72,7 @@ public class RUStoreClient {
 
 		// Implement here
 		System.out.println("writing put data");
-		out.println("PUT DATA") ;
+		out.writeBytes("PUT DATA\n") ;
 
 		System.out.println("wrote, waiting...");
 
@@ -78,7 +81,7 @@ public class RUStoreClient {
 
 		if (response.equals("KEY?")) {
 
-			out.println(key) ;
+			out.writeBytes(key + "\n") ;
 
 			response = in.readLine() ;
 
@@ -92,7 +95,8 @@ public class RUStoreClient {
 				System.out.println("Key does not exist") ;
 				//System.out.println("data length = " + data.length) ;
 				//out.println(data.length) ;
-				out.println(new String(data)) ;
+				//out.println(new String(data)) ;
+				out.writeBytes(new String(data) + "\n") ;
 
 
 			} else { // Invalid response
@@ -112,21 +116,125 @@ public class RUStoreClient {
 	}
 
 	/**
-	 * Sends an arbitrary data object to the object store server. If an
-	 * object with the same key already exists, the object should NOT
-	 * be overwritten.
+	 * Sends an arbitrary data object to the object store server. If an object with
+	 * the same key already exists, the object should NOT be overwritten.
 	 * 
 	 * @param key       key to be used as the unique identifier for the object
 	 * @param file_path path of file data to transfer
 	 * 
-	 * @return		0 upon success
-	 *        		1 if key already exists
-	 *        		Throw an exception otherwise
+	 * @return 0 upon success 1 if key already exists Throw an exception otherwise
+	 * @throws IOException
 	 */
-	public int put(String key, String file_path) {
+	public int put(String key, String file_path) throws IOException {
 
 		// Implement here
-		return -1;
+		System.out.println("writing put data");
+		out.writeBytes("PUT FILE\n") ;
+
+		System.out.println("wrote, waiting...");
+
+		String response = in.readLine() ;
+		System.out.println("response: " + response);
+
+		if (response.equals("KEY?")) {
+
+			out.writeBytes(key + "\n") ;
+
+			response = in.readLine() ;
+
+			if (response.equals("EXISTS")) {
+
+				System.out.println("Key already exists") ;
+				return 1 ;
+
+			} else if (response.equals("OPEN")) {
+
+				System.out.println("Key does not exist") ;
+				//System.out.println("data length = " + data.length) ;
+				//byte[] data = Files.readAllBytes(Paths.get(file_path)) ;
+				//out.print() ;
+				//out.println(new String(data)) ;
+
+				//int count ;
+
+				File file = new File(file_path) ;
+
+				out.writeBytes((int) file.length() + "\n");
+
+				byte[] data = new byte[(int) file.length()] ;
+
+				BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file)) ;
+
+				int count ;
+
+				System.out.println("Made it here length = " + file.length());
+
+				while ((count = bis.read(data)) > 0) {
+
+					out.write(data, 0, count) ;
+					System.out.println("count = " + count);
+
+				}
+
+				out.writeBytes("\n") ;
+
+				System.out.println("Done\n");
+
+				bis.close() ;
+
+				/*
+
+				FileInputStream fis = new FileInputStream(file) ;
+				BufferedInputStream bis = new BufferedInputStream(fis) ;
+
+				bis.read(data, 0, data.length) ;
+
+				clientSocket.getOutputStream().write(data, 0, data.length) ;
+
+				out.flush() ;
+
+				bis.close() ;
+
+				System.out.println("Done\n");
+
+				*/
+				
+				//out.writeBytes("DONE\n") ;
+				
+				//File f = new File(file_path) ;
+				//out.println(f.getName());
+				//out.println(f.length()) ;
+
+				// FileInputStream fis = new FileInputStream(f) ;
+
+				// byte[] buf = new byte[1024] ;
+				// int pos = 0 ;
+				// int r ;
+
+				// while ((r = fis.read(buf, 0, 1024)) >= 0 ) {
+
+				// 	clientSocket.getOutputStream().write(buf, 0, r);
+				// 	clientSocket.getOutputStream().flush() ;
+				// 	pos += r ;
+
+				// }
+
+				// fis.close() ;
+			
+
+			} else { // Invalid response
+
+				return -1 ;
+
+			}
+		
+		} else { // Invalid response
+
+			return -1 ;
+
+		}
+
+		return 0 ;
 
 	}
 
@@ -145,7 +253,7 @@ public class RUStoreClient {
 		// Implement here
 
 		System.out.println("writing get data");
-		out.println("GET DATA") ;
+		out.writeBytes("GET DATA\n") ;
 
 		System.out.println("wrote, waiting...");
 
@@ -154,7 +262,7 @@ public class RUStoreClient {
 
 		if (response.equals("KEY?")) {
 
-			out.println(key) ;
+			out.writeBytes(key + "\n") ;
 
 			response = in.readLine() ;
 
@@ -179,20 +287,73 @@ public class RUStoreClient {
 	}
 
 	/**
-	 * Downloads arbitrary data object associated with a given key
-	 * from the object store server and places it in a file.
+	 * Downloads arbitrary data object associated with a given key from the object
+	 * store server and places it in a file.
 	 * 
-	 * @param key	key associated with the object
-	 * @param	file_path	output file path
+	 * @param key       key associated with the object
+	 * @param file_path output file path
 	 * 
-	 * @return		0 upon success
-	 *        		1 if key doesn't exist
-	 *        		Throw an exception otherwise
+	 * @return 0 upon success 1 if key doesn't exist Throw an exception otherwise
+	 * @throws IOException
 	 */
-	public int get(String key, String file_path) {
+	public int get(String key, String file_path) throws IOException {
 
 		// Implement here
-		return -1;
+
+		System.out.println("writing get data");
+		out.writeBytes("GET DATA\n") ;
+
+		System.out.println("wrote, waiting...");
+
+		String response = in.readLine() ;
+		System.out.println("response: " + response);
+
+		if (response.equals("KEY?")) {
+
+			out.writeBytes(key + "\n") ;
+
+			response = in.readLine() ;
+
+			if (response.equals("FOUND")) {
+
+				System.out.println("Key exists") ;
+				int length = in.read() ;
+
+				byte[] fullBytes = new byte[length] ;
+
+				FileOutputStream fos = new FileOutputStream(file_path) ;
+				BufferedOutputStream bos = new BufferedOutputStream(fos) ;
+
+				int bytesRead = clientSocket.getInputStream().read(fullBytes, 0, length) ;
+				int current = bytesRead ;
+
+				while (bytesRead > -1) {
+
+					bytesRead = clientSocket.getInputStream().read(fullBytes, current, length - current) ;
+
+					if (bytesRead >= 0 ) {
+
+						current += bytesRead ;
+
+					}
+
+				}
+
+				bos.write(fullBytes, 0, current) ;
+
+				bos.flush() ;
+				bos.close() ;
+
+			} else if (response.equals("ABSENT")) {
+
+				System.out.println("Key not found");
+				return 1 ;
+
+			}
+
+		}
+
+		return 0;
 
 	}
 
@@ -238,8 +399,10 @@ public class RUStoreClient {
 
 		// Implement here
 
-		out.println("DISCONNECT") ;
+		out.writeBytes("DISCONNECT\n") ;
 
+		out.close() ;
+		in.close() ;
 		clientSocket.close();
 
 		System.out.println("Disconnected!");
