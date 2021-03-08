@@ -160,13 +160,18 @@ public class RUStoreServer {
 
 						ByteArrayOutputStream baos = new ByteArrayOutputStream() ;
 
-						while ((count = clientSocket.getInputStream().read(fullBytes)) > 1) {
+						int bytesRead = 0 ;
+
+						while ((count = clientSocket.getInputStream().read(fullBytes)) > 0 && (bytesRead < length)) {
 							
 							baos.write(fullBytes, 0, count) ;
 							//out.write(fullBytes, 0, count) ;
 							System.out.println("count = " + count);
+							bytesRead += count ;
 
 						}
+
+						baos.flush(); ;
 
 						
 						/*
@@ -231,9 +236,41 @@ public class RUStoreServer {
 
 						}
 
-						out.write(output.length) ;
+						out.writeBytes((int) output.length + "\n") ;
 
-						clientSocket.getOutputStream().write(bytes, 0, output.length) ;
+						System.out.println("length = " + bytes.length);
+ 
+						ByteArrayInputStream bais = new ByteArrayInputStream(bytes) ;
+
+						int count ;
+
+						int bytesRead = 0 ;
+
+						out.write(bytes) ;
+
+						//out.writeBytes("\n") ;
+
+						/*
+
+						while (((count = bais.read()) > -1) && (bytesRead < bytes.length)) {
+
+							out.write(bytes, 0, count) ;
+							bytesRead += count ;
+							System.out.println("count = " + count + " bytesRead = " + bytesRead + " length = " + bytes.length);
+
+						}
+
+						out.writeBytes("\n") ;
+
+						*/
+
+						out.flush();
+
+						System.out.println("Done");
+
+						//out.write(output.length) ;
+
+						//clientSocket.getOutputStream().write(bytes, 0, output.length) ;
 						
 
 					} else {

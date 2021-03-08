@@ -180,6 +180,8 @@ public class RUStoreClient {
 
 				System.out.println("Done\n");
 
+				out.flush();
+
 				bis.close() ;
 
 				/*
@@ -300,8 +302,8 @@ public class RUStoreClient {
 
 		// Implement here
 
-		System.out.println("writing get data");
-		out.writeBytes("GET DATA\n") ;
+		System.out.println("writing get file");
+		out.writeBytes("GET FILE\n") ;
 
 		System.out.println("wrote, waiting...");
 
@@ -317,29 +319,42 @@ public class RUStoreClient {
 			if (response.equals("FOUND")) {
 
 				System.out.println("Key exists") ;
-				int length = in.read() ;
+				int length = Integer.parseInt(in.readLine()) ;
+
+				System.out.println("Length = " + length) ;
 
 				byte[] fullBytes = new byte[length] ;
 
 				FileOutputStream fos = new FileOutputStream(file_path) ;
 				BufferedOutputStream bos = new BufferedOutputStream(fos) ;
 
-				int bytesRead = clientSocket.getInputStream().read(fullBytes, 0, length) ;
-				int current = bytesRead ;
+				//int bytesRead = clientSocket.getInputStream().read(fullBytes, 0, length) ;
+				int count ;
+				int bytesRead = 0 ;
 
-				while (bytesRead > -1) {
+				fullBytes = in.readLine().getBytes() ;
 
-					bytesRead = clientSocket.getInputStream().read(fullBytes, current, length - current) ;
+				/*
 
-					if (bytesRead >= 0 ) {
+				while ((count = clientSocket.getInputStream().read(fullBytes)) > 0 && (bytesRead < length)) {
 
-						current += bytesRead ;
+					bos.write(fullBytes, 0, count) ;
+					bytesRead += count ;
+					System.out.println("count = " + count + " bytes read = " + bytesRead + " length = " + length);
+
+					if (bytesRead >= length) {
+
+						break ;
 
 					}
 
 				}
 
-				bos.write(fullBytes, 0, current) ;
+				*/
+
+				System.out.println("Done");
+
+				//bos.write(fullBytes, 0, current) ;
 
 				bos.flush() ;
 				bos.close() ;
