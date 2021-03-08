@@ -249,6 +249,10 @@ public class RUStoreServer {
 
 						}
 
+						//FileOutputStream fos = new FileOutputStream("./outputfiles/test2_.mp3") ;
+						//fos.write(bytes);
+						//fos.close();
+
 						out.writeBytes((int) output.length + "\n") ;
 
 						System.out.println("length = " + bytes.length);
@@ -259,7 +263,18 @@ public class RUStoreServer {
 
 						int bytesRead = 0 ;
 
-						out.write(bytes) ;
+						byte[] buffer = new byte[bytes.length] ;
+
+						while (((count = bais.read(buffer)) > 0) && (bytesRead < bytes.length)) {
+
+							out.write(buffer, 0, count) ;
+							bytesRead += count ;
+
+						}
+
+						out.writeBytes("\n") ;
+
+						//out.write(bytes) ;
 
 						//out.writeBytes("\n") ;
 

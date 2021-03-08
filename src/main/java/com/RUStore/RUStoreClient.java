@@ -328,11 +328,24 @@ public class RUStoreClient {
 				FileOutputStream fos = new FileOutputStream(file_path) ;
 				BufferedOutputStream bos = new BufferedOutputStream(fos) ;
 
+				ByteArrayOutputStream baos = new ByteArrayOutputStream() ;
+
 				//int bytesRead = clientSocket.getInputStream().read(fullBytes, 0, length) ;
 				int count ;
 				int bytesRead = 0 ;
 
-				fullBytes = in.readLine().getBytes() ;
+				byte[] buffer = new byte[length] ;
+
+				while (((count = clientSocket.getInputStream().read(buffer)) > 0) && (bytesRead < length)) {
+
+					baos.write(buffer, 0, count) ;
+					bytesRead += count ;
+
+				}
+
+				fullBytes = baos.toByteArray() ;
+
+				//fullBytes = in.readLine().getBytes() ;
 
 				/*
 
@@ -352,12 +365,12 @@ public class RUStoreClient {
 
 				*/
 
-				System.out.println("Done");
-
-				//bos.write(fullBytes, 0, current) ;
+				bos.write(fullBytes) ;
 
 				bos.flush() ;
 				bos.close() ;
+
+				System.out.println("Done");
 
 			} else if (response.equals("ABSENT")) {
 
