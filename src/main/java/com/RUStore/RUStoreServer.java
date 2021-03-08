@@ -162,16 +162,27 @@ public class RUStoreServer {
 
 						int bytesRead = 0 ;
 
-						while ((count = clientSocket.getInputStream().read(fullBytes)) > 0 && (bytesRead < length)) {
+						byte[] buffer = new byte[length] ;
+
+						//FileOutputStream fos = new FileOutputStream("./outputfiles/test1_.mp3") ;
+						//BufferedOutputStream bos = new BufferedOutputStream(fos) ;
+
+						while ((count = clientSocket.getInputStream().read(buffer)) > 0 && (bytesRead < length)) {
 							
-							baos.write(fullBytes, 0, count) ;
+							baos.write(buffer, 0, count) ;
+							//bos.write(fullBytes, 0, count) ;
 							//out.write(fullBytes, 0, count) ;
 							System.out.println("count = " + count);
 							bytesRead += count ;
 
 						}
 
-						baos.flush(); ;
+						fullBytes = baos.toByteArray() ;
+
+						//fos.write(fullBytes) ;
+						baos.flush(); 
+						//bos.close() ;
+						//fos.close() ;
 
 						
 						/*
@@ -206,6 +217,8 @@ public class RUStoreServer {
 							}
 	
 							data.put(key, bytes) ;
+
+						
 
 						
 
