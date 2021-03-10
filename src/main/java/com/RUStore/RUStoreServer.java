@@ -11,11 +11,8 @@ public class RUStoreServer {
 
 	private static ServerSocket serverSocket;
 	private static Socket clientSocket;
-	//private static PrintWriter out ;
 	private static DataOutputStream out ;
-	//private static DataOutputStream dOut ;
 	private static BufferedReader in ;
-	//private static DataInputStream dIn ;
 	private static Hashtable<String, Byte[]> data = new Hashtable<String, Byte[]>() ;
 
 	/* any necessary helper methods here */
@@ -42,9 +39,7 @@ public class RUStoreServer {
 		clientSocket = serverSocket.accept();
 
 		out = new DataOutputStream(clientSocket.getOutputStream()) ;
-		//dOut = new DataOutputStream(clientSocket.getOutputStream()) ;
 		in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())) ;
-		//dIn = new DataInputStream(clientSocket.getInputStream()) ;
 
 		System.out.println("Client connected!");
 
@@ -75,8 +70,6 @@ public class RUStoreServer {
 							byte[] input = in.readLine().getBytes() ;
 	
 							System.out.println("input length = " + input.length) ;
-	
-							//dIn.readFully(input, 0, size) ;
 	
 							Byte[] bytes = new Byte[input.length] ;
 	
@@ -142,7 +135,6 @@ public class RUStoreServer {
 
 						out.writeBytes("EXISTS") ;
 						System.out.println("Key already exists");
-						// break ;
 
 					} else {
 
@@ -164,7 +156,7 @@ public class RUStoreServer {
 
 						byte[] buffer = new byte[length] ;
 
-						FileOutputStream fos = new FileOutputStream("./outputfiles/idk.mp3") ;
+						//FileOutputStream fos = new FileOutputStream("./outputfiles/idk.jpg") ;
 						//BufferedOutputStream bos = new BufferedOutputStream(fos) ;
 
 						while ((bytesRead < length) && (count = clientSocket.getInputStream().read(buffer)) > 0) {
@@ -181,37 +173,15 @@ public class RUStoreServer {
 
 						fullBytes = baos.toByteArray() ;
 
-						fos.write(fullBytes) ;
+						//fos.write(fullBytes) ;
 						//baos.flush(); 
 						baos.close();
 						//bos.close() ;
-						fos.close() ;
-
-						
-						/*
-
-						int bytesRead = clientSocket.getInputStream().read(fullBytes, 0, length) ;
-						int current = bytesRead ;
-
-						while (bytesRead > -1) {
-
-							bytesRead = clientSocket.getInputStream().read(fullBytes, current, length - current) ;
-
-							if (bytesRead >= 0 ) {
-
-								current += bytesRead ;
-
-							}
-
-						}
-
-						*/
+						//fos.close() ;
 
 						System.out.println("Finished processing file") ;
 
 						out.writeBytes("DONE\n");
-	
-							//dIn.readFully(input, 0, size) ;
 	
 							Byte[] bytes = new Byte[fullBytes.length] ;
 	
@@ -251,9 +221,9 @@ public class RUStoreServer {
 
 						}
 
-						FileOutputStream fos = new FileOutputStream("./outputfiles/test2_.mp3") ;
-						fos.write(bytes);
-						fos.close();
+						//FileOutputStream fos = new FileOutputStream("./outputfiles/test2_.jpg") ;
+						//fos.write(bytes);
+						//fos.close();
 
 						out.writeBytes((int) output.length + "\n") ;
 
@@ -274,35 +244,10 @@ public class RUStoreServer {
 
 						}
 
-						//out.writeBytes("\n") ;
-
-						//out.write(bytes) ;
-
-						//out.writeBytes("\n") ;
-
-						/*
-
-						while (((count = bais.read()) > -1) && (bytesRead < bytes.length)) {
-
-							out.write(bytes, 0, count) ;
-							bytesRead += count ;
-							System.out.println("count = " + count + " bytesRead = " + bytesRead + " length = " + bytes.length);
-
-						}
-
-						out.writeBytes("\n") ;
-
-						*/
-
 						out.flush();
 
 						System.out.println("Done");
-
-						//out.write(output.length) ;
-
-						//clientSocket.getOutputStream().write(bytes, 0, output.length) ;
 						
-
 					} else {
 
 						out.writeBytes("ABSENT\n") ;

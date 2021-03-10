@@ -2,8 +2,6 @@ package com.RUStore;
 
 /* any necessary Java packages here */
 import java.net.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.io.*;
 
 public class RUStoreClient {
@@ -48,11 +46,8 @@ public class RUStoreClient {
 		// Implement here
 
 		clientSocket = new Socket(h, p);
-		//out = new PrintWriter(clientSocket.getOutputStream(), true) ;
 		out = new DataOutputStream(clientSocket.getOutputStream()) ;
-		//dOut = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream())) ;
 		in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())) ;
-		//dIn = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream())) ;
 
 		System.out.println("Connected!");
 
@@ -150,12 +145,6 @@ public class RUStoreClient {
 			} else if (response.equals("OPEN")) {
 
 				System.out.println("Key does not exist") ;
-				//System.out.println("data length = " + data.length) ;
-				//byte[] data = Files.readAllBytes(Paths.get(file_path)) ;
-				//out.print() ;
-				//out.println(new String(data)) ;
-
-				//int count ;
 
 				File file = new File(file_path) ;
 
@@ -175,12 +164,8 @@ public class RUStoreClient {
 					System.out.println("count = " + count);
 
 				}
-
-				//out.writeBytes("\n") ;
 				
 				out.flush();
-
-				//System.out.println("wrote end");
 				
 				response = in.readLine() ;
 
@@ -191,45 +176,6 @@ public class RUStoreClient {
 				}
 
 				bis.close() ;
-
-				/*
-
-				FileInputStream fis = new FileInputStream(file) ;
-				BufferedInputStream bis = new BufferedInputStream(fis) ;
-
-				bis.read(data, 0, data.length) ;
-
-				clientSocket.getOutputStream().write(data, 0, data.length) ;
-
-				out.flush() ;
-
-				bis.close() ;
-
-				System.out.println("Done\n");
-
-				*/
-				
-				//out.writeBytes("DONE\n") ;
-				
-				//File f = new File(file_path) ;
-				//out.println(f.getName());
-				//out.println(f.length()) ;
-
-				// FileInputStream fis = new FileInputStream(f) ;
-
-				// byte[] buf = new byte[1024] ;
-				// int pos = 0 ;
-				// int r ;
-
-				// while ((r = fis.read(buf, 0, 1024)) >= 0 ) {
-
-				// 	clientSocket.getOutputStream().write(buf, 0, r);
-				// 	clientSocket.getOutputStream().flush() ;
-				// 	pos += r ;
-
-				// }
-
-				// fis.close() ;
 			
 
 			} else { // Invalid response
@@ -352,26 +298,6 @@ public class RUStoreClient {
 				}
 
 				fullBytes = baos.toByteArray() ;
-
-				//fullBytes = in.readLine().getBytes() ;
-
-				/*
-
-				while ((count = clientSocket.getInputStream().read(fullBytes)) > 0 && (bytesRead < length)) {
-
-					bos.write(fullBytes, 0, count) ;
-					bytesRead += count ;
-					System.out.println("count = " + count + " bytes read = " + bytesRead + " length = " + length);
-
-					if (bytesRead >= length) {
-
-						break ;
-
-					}
-
-				}
-
-				*/
 
 				bos.write(fullBytes) ;
 
