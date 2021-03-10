@@ -164,25 +164,28 @@ public class RUStoreServer {
 
 						byte[] buffer = new byte[length] ;
 
-						//FileOutputStream fos = new FileOutputStream("./outputfiles/test1_.mp3") ;
+						FileOutputStream fos = new FileOutputStream("./outputfiles/idk.mp3") ;
 						//BufferedOutputStream bos = new BufferedOutputStream(fos) ;
 
-						while ((count = clientSocket.getInputStream().read(buffer)) > 0 && (bytesRead < length)) {
+						while ((bytesRead < length) && (count = clientSocket.getInputStream().read(buffer)) > 0) {
 							
 							baos.write(buffer, 0, count) ;
 							//bos.write(fullBytes, 0, count) ;
 							//out.write(fullBytes, 0, count) ;
-							System.out.println("count = " + count);
 							bytesRead += count ;
+							System.out.println("count = " + count + " bytesRead = " + bytesRead);
 
 						}
 
+						System.out.println("done");
+
 						fullBytes = baos.toByteArray() ;
 
-						//fos.write(fullBytes) ;
-						baos.flush(); 
+						fos.write(fullBytes) ;
+						//baos.flush(); 
+						baos.close();
 						//bos.close() ;
-						//fos.close() ;
+						fos.close() ;
 
 						
 						/*
@@ -205,6 +208,8 @@ public class RUStoreServer {
 						*/
 
 						System.out.println("Finished processing file") ;
+
+						out.writeBytes("DONE\n");
 	
 							//dIn.readFully(input, 0, size) ;
 	
@@ -246,9 +251,9 @@ public class RUStoreServer {
 
 						}
 
-						//FileOutputStream fos = new FileOutputStream("./outputfiles/test2_.mp3") ;
-						//fos.write(bytes);
-						//fos.close();
+						FileOutputStream fos = new FileOutputStream("./outputfiles/test2_.mp3") ;
+						fos.write(bytes);
+						fos.close();
 
 						out.writeBytes((int) output.length + "\n") ;
 
@@ -269,7 +274,7 @@ public class RUStoreServer {
 
 						}
 
-						out.writeBytes("\n") ;
+						//out.writeBytes("\n") ;
 
 						//out.write(bytes) ;
 
