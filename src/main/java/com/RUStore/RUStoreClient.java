@@ -395,11 +395,41 @@ public class RUStoreClient {
 	 * @return		0 upon success
 	 *        		1 if key doesn't exist
 	 *        		Throw an exception otherwise
+	 * @throws IOException
 	 */
-	public int remove(String key) {
+	public int remove(String key) throws IOException {
 
 		// Implement here
+
+		out.writeBytes("REMOVE\n") ;
+
+		System.out.println("wrote, waiting...");
+
+		String response = in.readLine() ;
+		System.out.println("response: " + response);
+
+		if (response.equals("KEY?")) {
+
+			out.writeBytes(key + "\n") ;
+
+			response = in.readLine() ;
+
+			if (response.equals("FOUND")) {
+
+				return 0 ;
+
+			} else if (response.equals("ABSENT")) {
+
+				return 1 ;
+
+			}
+
+		}
+
+
 		return -1;
+
+
 
 	}
 
@@ -408,11 +438,34 @@ public class RUStoreClient {
 	 * 
 	 * @return		List of keys as string array, null if there are no keys.
 	 *        		Throw an exception if any other issues occur.
+	 * @throws IOException
+	 * @throws NumberFormatException
 	 */
-	public String[] list() {
+	public String[] list() throws NumberFormatException, IOException {
 
 		// Implement here
-		return null;
+
+		out.writeBytes("LIST\n") ;
+
+		System.out.println("wrote, waiting...");
+
+		int size = Integer.parseInt(in.readLine()) ;
+
+		if (size == 0) {
+
+			return null ;
+
+		}
+
+		String[] list = new String[size] ;
+
+		for (int i = 0 ; i < size ; i++) {
+
+			list[i] = in.readLine() ;
+
+		}
+
+		return list;
 
 	}
 

@@ -218,9 +218,6 @@ public class RUStoreServer {
 	
 							data.put(key, bytes) ;
 
-						
-
-						
 
 					}
 
@@ -305,6 +302,48 @@ public class RUStoreServer {
 
 						out.writeBytes("ABSENT\n") ;
 						System.out.println("Not found");
+
+					}
+
+					break ;
+
+				}
+
+				case "REMOVE": {
+
+					out.writeBytes("KEY?\n");
+					String key = in.readLine() ;
+
+					if (data.containsKey(key)) {
+
+						out.writeBytes("FOUND\n");
+						data.remove(key) ;
+
+					} else {
+
+						out.writeBytes("ABSENT\n");
+
+					}
+
+					break ;
+
+				}
+
+				case "LIST": {
+
+					out.writeBytes(data.size() + "\n");
+
+					if (data.size() == 0) {
+
+						break ;
+
+					} else {
+
+						for (String key : data.keySet()) {
+
+							out.writeBytes(key + "\n");
+	
+						}
 
 					}
 
