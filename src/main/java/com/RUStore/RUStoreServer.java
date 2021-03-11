@@ -36,285 +36,291 @@ public class RUStoreServer {
 		// Implement here //
 
 		serverSocket = new ServerSocket(port);
-		clientSocket = serverSocket.accept();
 
-		out = new DataOutputStream(clientSocket.getOutputStream()) ;
-		in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())) ;
+		while (true) {
 
-		System.out.println("Client connected!");
+			clientSocket = serverSocket.accept();
 
-		String inputLine ;
-
-		while (((inputLine = in.readLine()) != null) && (!inputLine.equals("DISCONNECT"))) {
-
-			System.out.println("selection: " + inputLine);
-			
-			switch(inputLine) {
-
-				case "PUT DATA": {
-
-					out.writeBytes("KEY?\n");
-					String key = in.readLine() ;
-					System.out.println("Key = " + key) ;
-
-					if (data.containsKey(key)) {
-
-						out.writeBytes("EXISTS\n") ;
-						System.out.println("Key already exists");
-						// break ;
-
-					} else {
-
-						out.writeBytes("OPEN\n") ;
+			out = new DataOutputStream(clientSocket.getOutputStream()) ;
+			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())) ;
 	
-							byte[] input = in.readLine().getBytes() ;
+			System.out.println("Client connected!");
 	
-							System.out.println("input length = " + input.length) ;
+			String inputLine ;
 	
-							Byte[] bytes = new Byte[input.length] ;
+			while (((inputLine = in.readLine()) != null) && (!inputLine.equals("DISCONNECT"))) {
 	
-							for (int i = 0 ; i < bytes.length ; i++) {
+				System.out.println("selection: " + inputLine);
+				
+				switch(inputLine) {
 	
-								bytes[i] = input[i] ;
+					case "PUT DATA": {
 	
-							}
+						out.writeBytes("KEY?\n");
+						String key = in.readLine() ;
+						System.out.println("Key = " + key) ;
 	
-							data.put(key, bytes) ;
-
-							System.out.println("PUT DATA done") ;
+						if (data.containsKey(key)) {
 	
-					
-					}
-
-
-					break ;
-					
-				}
-				case "GET DATA": {
-
-					out.writeBytes("KEY?\n");
-					String key = in.readLine() ;
-					System.out.println("Key = " + key) ;
-
-					if (data.containsKey(key)) {
-
-						out.writeBytes("FOUND\n") ;
-						System.out.println("Key found");
-
-						Byte[] output = data.get(key) ;
-
-						byte[] bytes = new byte[output.length] ;
+							out.writeBytes("EXISTS\n") ;
+							System.out.println("Key already exists");
+							// break ;
 	
-						for (int i = 0 ; i < output.length ; i++) {
-
-							bytes[i] = output[i] ;
-
-						}
-
-						out.writeBytes(new String(bytes) + "\n");
+						} else {
+	
+							out.writeBytes("OPEN\n") ;
+		
+								byte[] input = in.readLine().getBytes() ;
+		
+								System.out.println("input length = " + input.length) ;
+		
+								Byte[] bytes = new Byte[input.length] ;
+		
+								for (int i = 0 ; i < bytes.length ; i++) {
+		
+									bytes[i] = input[i] ;
+		
+								}
+		
+								data.put(key, bytes) ;
+	
+								System.out.println("PUT DATA done") ;
+		
 						
-
-					} else {
-
-						out.writeBytes("ABSENT\n") ;
-						System.out.println("Not found");
-
-					}
-
-					break ;
-
-				}
-
-				case "PUT FILE": {
-
-					out.writeBytes("KEY?\n");
-					String key = in.readLine() ;
-					System.out.println("Key = " + key) ;
-
-					if (data.containsKey(key)) {
-
-						out.writeBytes("EXISTS") ;
-						System.out.println("Key already exists");
-
-					} else {
-
-						out.writeBytes("OPEN\n") ;
-	
-						int length = Integer.parseInt(in.readLine()) ;
-
-						System.out.println("input length = " + length) ;
-
-						byte[] fullBytes = new byte[length] ;
-
-						int count = 0 ;
-
-						System.out.println("Made it here\n");
-
-						ByteArrayOutputStream baos = new ByteArrayOutputStream() ;
-
-						int bytesRead = 0 ;
-
-						byte[] buffer = new byte[length] ;
-
-						//FileOutputStream fos = new FileOutputStream("./outputfiles/idk.jpg") ;
-						//BufferedOutputStream bos = new BufferedOutputStream(fos) ;
-
-						while ((bytesRead < length) && (count = clientSocket.getInputStream().read(buffer)) > 0) {
-							
-							baos.write(buffer, 0, count) ;
-							//bos.write(fullBytes, 0, count) ;
-							//out.write(fullBytes, 0, count) ;
-							bytesRead += count ;
-							System.out.println("count = " + count + " bytesRead = " + bytesRead);
-
 						}
-
-						System.out.println("done");
-
-						fullBytes = baos.toByteArray() ;
-
-						//fos.write(fullBytes) ;
-						//baos.flush(); 
-						baos.close();
-						//bos.close() ;
-						//fos.close() ;
-
-						System.out.println("Finished processing file") ;
-
-						out.writeBytes("DONE\n");
 	
-							Byte[] bytes = new Byte[fullBytes.length] ;
 	
-							for (int i = 0 ; i < bytes.length ; i++) {
-	
-								bytes[i] = fullBytes[i] ;
-	
-							}
-	
-							data.put(key, bytes) ;
-
-
-					}
-
-					break ;
-
-				}
-
-				case "GET FILE": {
-
-					out.writeBytes("KEY?\n");
-					String key = in.readLine() ;
-					System.out.println("Key = " + key) ;
-
-					if (data.containsKey(key)) {
-
-						out.writeBytes("FOUND\n") ;
-						System.out.println("Key found");
-
-						Byte[] output = data.get(key) ;
-
-						byte[] bytes = new byte[output.length] ;
-	
-						for (int i = 0 ; i < output.length ; i++) {
-
-							bytes[i] = output[i] ;
-
-						}
-
-						//FileOutputStream fos = new FileOutputStream("./outputfiles/test2_.jpg") ;
-						//fos.write(bytes);
-						//fos.close();
-
-						out.writeBytes((int) output.length + "\n") ;
-
-						System.out.println("length = " + bytes.length);
- 
-						ByteArrayInputStream bais = new ByteArrayInputStream(bytes) ;
-
-						int count ;
-
-						int bytesRead = 0 ;
-
-						byte[] buffer = new byte[bytes.length] ;
-
-						while (((count = bais.read(buffer)) > 0) && (bytesRead < bytes.length)) {
-
-							out.write(buffer, 0, count) ;
-							bytesRead += count ;
-
-						}
-
-						out.flush();
-
-						System.out.println("Done");
-						
-					} else {
-
-						out.writeBytes("ABSENT\n") ;
-						System.out.println("Not found");
-
-					}
-
-					break ;
-
-				}
-
-				case "REMOVE": {
-
-					out.writeBytes("KEY?\n");
-					String key = in.readLine() ;
-
-					if (data.containsKey(key)) {
-
-						out.writeBytes("FOUND\n");
-						data.remove(key) ;
-
-					} else {
-
-						out.writeBytes("ABSENT\n");
-
-					}
-
-					break ;
-
-				}
-
-				case "LIST": {
-
-					out.writeBytes(data.size() + "\n");
-
-					if (data.size() == 0) {
-
 						break ;
-
-					} else {
-
-						for (String key : data.keySet()) {
-
-							out.writeBytes(key + "\n");
+						
+					}
+					case "GET DATA": {
+	
+						out.writeBytes("KEY?\n");
+						String key = in.readLine() ;
+						System.out.println("Key = " + key) ;
+	
+						if (data.containsKey(key)) {
+	
+							out.writeBytes("FOUND\n") ;
+							System.out.println("Key found");
+	
+							Byte[] output = data.get(key) ;
+	
+							byte[] bytes = new byte[output.length] ;
+		
+							for (int i = 0 ; i < output.length ; i++) {
+	
+								bytes[i] = output[i] ;
+	
+							}
+	
+							out.writeBytes(new String(bytes) + "\n");
+							
+	
+						} else {
+	
+							out.writeBytes("ABSENT\n") ;
+							System.out.println("Not found");
 	
 						}
-
+	
+						break ;
+	
 					}
-
-					break ;
-
+	
+					case "PUT FILE": {
+	
+						out.writeBytes("KEY?\n");
+						String key = in.readLine() ;
+						System.out.println("Key = " + key) ;
+	
+						if (data.containsKey(key)) {
+	
+							out.writeBytes("EXISTS") ;
+							System.out.println("Key already exists");
+	
+						} else {
+	
+							out.writeBytes("OPEN\n") ;
+		
+							int length = Integer.parseInt(in.readLine()) ;
+	
+							System.out.println("input length = " + length) ;
+	
+							byte[] fullBytes = new byte[length] ;
+	
+							int count = 0 ;
+	
+							System.out.println("Made it here\n");
+	
+							ByteArrayOutputStream baos = new ByteArrayOutputStream() ;
+	
+							int bytesRead = 0 ;
+	
+							byte[] buffer = new byte[length] ;
+	
+							//FileOutputStream fos = new FileOutputStream("./outputfiles/idk.jpg") ;
+							//BufferedOutputStream bos = new BufferedOutputStream(fos) ;
+	
+							while ((bytesRead < length) && (count = clientSocket.getInputStream().read(buffer)) > 0) {
+								
+								baos.write(buffer, 0, count) ;
+								//bos.write(fullBytes, 0, count) ;
+								//out.write(fullBytes, 0, count) ;
+								bytesRead += count ;
+								System.out.println("count = " + count + " bytesRead = " + bytesRead);
+	
+							}
+	
+							System.out.println("done");
+	
+							fullBytes = baos.toByteArray() ;
+	
+							//fos.write(fullBytes) ;
+							//baos.flush(); 
+							baos.close();
+							//bos.close() ;
+							//fos.close() ;
+	
+							System.out.println("Finished processing file") ;
+	
+							out.writeBytes("DONE\n");
+		
+								Byte[] bytes = new Byte[fullBytes.length] ;
+		
+								for (int i = 0 ; i < bytes.length ; i++) {
+		
+									bytes[i] = fullBytes[i] ;
+		
+								}
+		
+								data.put(key, bytes) ;
+	
+	
+						}
+	
+						break ;
+	
+					}
+	
+					case "GET FILE": {
+	
+						out.writeBytes("KEY?\n");
+						String key = in.readLine() ;
+						System.out.println("Key = " + key) ;
+	
+						if (data.containsKey(key)) {
+	
+							out.writeBytes("FOUND\n") ;
+							System.out.println("Key found");
+	
+							Byte[] output = data.get(key) ;
+	
+							byte[] bytes = new byte[output.length] ;
+		
+							for (int i = 0 ; i < output.length ; i++) {
+	
+								bytes[i] = output[i] ;
+	
+							}
+	
+							//FileOutputStream fos = new FileOutputStream("./outputfiles/test2_.jpg") ;
+							//fos.write(bytes);
+							//fos.close();
+	
+							out.writeBytes((int) output.length + "\n") ;
+	
+							System.out.println("length = " + bytes.length);
+	 
+							ByteArrayInputStream bais = new ByteArrayInputStream(bytes) ;
+	
+							int count ;
+	
+							int bytesRead = 0 ;
+	
+							byte[] buffer = new byte[bytes.length] ;
+	
+							while (((count = bais.read(buffer)) > 0) && (bytesRead < bytes.length)) {
+	
+								out.write(buffer, 0, count) ;
+								bytesRead += count ;
+	
+							}
+	
+							out.flush();
+	
+							System.out.println("Done");
+							
+						} else {
+	
+							out.writeBytes("ABSENT\n") ;
+							System.out.println("Not found");
+	
+						}
+	
+						break ;
+	
+					}
+	
+					case "REMOVE": {
+	
+						out.writeBytes("KEY?\n");
+						String key = in.readLine() ;
+	
+						if (data.containsKey(key)) {
+	
+							out.writeBytes("FOUND\n");
+							data.remove(key) ;
+	
+						} else {
+	
+							out.writeBytes("ABSENT\n");
+	
+						}
+	
+						break ;
+	
+					}
+	
+					case "LIST": {
+	
+						out.writeBytes(data.size() + "\n");
+	
+						if (data.size() == 0) {
+	
+							break ;
+	
+						} else {
+	
+							for (String key : data.keySet()) {
+	
+								out.writeBytes(key + "\n");
+		
+							}
+	
+						}
+	
+						break ;
+	
+					}
+	
 				}
-
+	
 			}
+	
+			out.close() ;
+			in.close() ;
+	
+			clientSocket.close();
+	
+			System.out.println("Client disconnected!");
 
 		}
-
-		out.close() ;
-		in.close() ;
-
-		clientSocket.close();
-
-		System.out.println("Client disconnected!");
+	
 		
-		serverSocket.close();
+		//serverSocket.close();
 
-		System.out.println("Server closed!") ;
+		//System.out.println("Server closed!") ;
 
 
 	}
