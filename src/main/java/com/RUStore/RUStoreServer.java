@@ -26,7 +26,7 @@ public class RUStoreServer {
 
 		// Check if at least one argument that is potentially a port number
 		if (args.length != 1) {
-			System.out.println("Invalid number of arguments. You must provide a port number.");
+			//System.out.println("Invalid number of arguments. You must provide a port number.");
 			return;
 		}
 
@@ -44,13 +44,13 @@ public class RUStoreServer {
 			out = new DataOutputStream(clientSocket.getOutputStream()) ;
 			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())) ;
 	
-			System.out.println("Client connected!");
+			//System.out.println("Client connected!");
 	
 			String inputLine ;
 	
 			while (((inputLine = in.readLine()) != null) && (!inputLine.equals("DISCONNECT"))) {
 	
-				System.out.println("selection: " + inputLine);
+				//System.out.println("selection: " + inputLine);
 				
 				switch(inputLine) {
 	
@@ -58,12 +58,12 @@ public class RUStoreServer {
 	
 						out.writeBytes("KEY?\n");
 						String key = in.readLine() ;
-						System.out.println("Key = " + key) ;
+						//System.out.println("Key = " + key) ;
 	
 						if (data.containsKey(key)) {
 	
 							out.writeBytes("EXISTS\n") ;
-							System.out.println("Key already exists");
+							//System.out.println("Key already exists");
 							// break ;
 	
 						} else {
@@ -72,7 +72,7 @@ public class RUStoreServer {
 		
 								byte[] input = in.readLine().getBytes() ;
 		
-								System.out.println("input length = " + input.length) ;
+								//System.out.println("input length = " + input.length) ;
 		
 								Byte[] bytes = new Byte[input.length] ;
 		
@@ -84,7 +84,7 @@ public class RUStoreServer {
 		
 								data.put(key, bytes) ;
 	
-								System.out.println("PUT DATA done") ;
+								//System.out.println("PUT DATA done") ;
 		
 						
 						}
@@ -97,12 +97,12 @@ public class RUStoreServer {
 	
 						out.writeBytes("KEY?\n");
 						String key = in.readLine() ;
-						System.out.println("Key = " + key) ;
+						//System.out.println("Key = " + key) ;
 	
 						if (data.containsKey(key)) {
 	
 							out.writeBytes("FOUND\n") ;
-							System.out.println("Key found");
+							//System.out.println("Key found");
 	
 							Byte[] output = data.get(key) ;
 	
@@ -120,7 +120,7 @@ public class RUStoreServer {
 						} else {
 	
 							out.writeBytes("ABSENT\n") ;
-							System.out.println("Not found");
+							//System.out.println("Not found");
 	
 						}
 	
@@ -132,12 +132,12 @@ public class RUStoreServer {
 	
 						out.writeBytes("KEY?\n");
 						String key = in.readLine() ;
-						System.out.println("Key = " + key) ;
+						//System.out.println("Key = " + key) ;
 	
 						if (data.containsKey(key)) {
 	
 							out.writeBytes("EXISTS") ;
-							System.out.println("Key already exists");
+							//System.out.println("Key already exists");
 	
 						} else {
 	
@@ -145,13 +145,13 @@ public class RUStoreServer {
 		
 							int length = Integer.parseInt(in.readLine()) ;
 	
-							System.out.println("input length = " + length) ;
+							//System.out.println("input length = " + length) ;
 	
 							byte[] fullBytes = new byte[length] ;
 	
 							int count = 0 ;
 	
-							System.out.println("Made it here\n");
+							//System.out.println("Made it here\n");
 	
 							ByteArrayOutputStream baos = new ByteArrayOutputStream() ;
 	
@@ -168,11 +168,11 @@ public class RUStoreServer {
 								//bos.write(fullBytes, 0, count) ;
 								//out.write(fullBytes, 0, count) ;
 								bytesRead += count ;
-								System.out.println("count = " + count + " bytesRead = " + bytesRead);
+								//System.out.println("count = " + count + " bytesRead = " + bytesRead);
 	
 							}
 	
-							System.out.println("done");
+							//System.out.println("done");
 	
 							fullBytes = baos.toByteArray() ;
 	
@@ -182,7 +182,7 @@ public class RUStoreServer {
 							//bos.close() ;
 							//fos.close() ;
 	
-							System.out.println("Finished processing file") ;
+							//System.out.println("Finished processing file") ;
 	
 							out.writeBytes("DONE\n");
 		
@@ -207,12 +207,12 @@ public class RUStoreServer {
 	
 						out.writeBytes("KEY?\n");
 						String key = in.readLine() ;
-						System.out.println("Key = " + key) ;
+						//System.out.println("Key = " + key) ;
 	
 						if (data.containsKey(key)) {
 	
 							out.writeBytes("FOUND\n") ;
-							System.out.println("Key found");
+							//System.out.println("Key found");
 	
 							Byte[] output = data.get(key) ;
 	
@@ -230,7 +230,7 @@ public class RUStoreServer {
 	
 							out.writeBytes((int) output.length + "\n") ;
 	
-							System.out.println("length = " + bytes.length);
+							//System.out.println("length = " + bytes.length);
 	 
 							ByteArrayInputStream bais = new ByteArrayInputStream(bytes) ;
 	
@@ -240,7 +240,7 @@ public class RUStoreServer {
 	
 							byte[] buffer = new byte[bytes.length] ;
 	
-							while (((count = bais.read(buffer)) > 0) && (bytesRead < bytes.length)) {
+							while ((bytesRead < bytes.length) && ((count = bais.read(buffer)) > 0)) {
 	
 								out.write(buffer, 0, count) ;
 								bytesRead += count ;
@@ -249,12 +249,12 @@ public class RUStoreServer {
 	
 							out.flush();
 	
-							System.out.println("Done");
+							//System.out.println("Done");
 							
 						} else {
 	
 							out.writeBytes("ABSENT\n") ;
-							System.out.println("Not found");
+							//System.out.println("Not found");
 	
 						}
 	
@@ -313,14 +313,14 @@ public class RUStoreServer {
 	
 			clientSocket.close();
 	
-			System.out.println("Client disconnected!");
+			//System.out.println("Client disconnected!");
 
 		}
 	
 		
 		//serverSocket.close();
 
-		//System.out.println("Server closed!") ;
+		////System.out.println("Server closed!") ;
 
 
 	}
