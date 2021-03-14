@@ -160,14 +160,15 @@ public class RUStoreClient {
 
 				//System.out.println("Made it here length = " + file.length());
 
-				while ((bytesRead < data.length) && (count = bis.read(data)) > 0) {
+				while ((bytesRead < data.length)) {
 
-					out.write(data, 0, count) ;
+					count = bis.read(data, bytesRead, (data.length - bytesRead)) ;
 					bytesRead += count ;
 					//System.out.println("count = " + count + " bytesRead = " + bytesRead);
 
 				}
 				
+				out.write(data) ;
 				out.flush();
 				
 				response = in.readLine() ;

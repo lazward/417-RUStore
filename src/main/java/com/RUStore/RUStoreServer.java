@@ -242,13 +242,14 @@ public class RUStoreServer {
 	
 							byte[] buffer = new byte[bytes.length] ;
 	
-							while ((bytesRead < bytes.length) && ((count = bais.read(buffer)) > 0)) {
+							while ((bytesRead < bytes.length)) {
 	
-								out.write(buffer, 0, count) ;
+								count = bais.read(buffer, bytesRead, (bytes.length - bytesRead)) ;
 								bytesRead += count ;
 	
 							}
 	
+							out.write(buffer) ;
 							out.flush();
 	
 							//System.out.println("Done");
