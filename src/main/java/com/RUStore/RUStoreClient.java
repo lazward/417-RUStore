@@ -172,11 +172,11 @@ public class RUStoreClient {
 				
 				response = in.readLine() ;
 
-				if (response.equals("DONE\n")) {
+				//if (response.equals("DONE\n")) {
 
 					//System.out.println("Done\n");
 
-				}
+				//}
 
 				bis.close() ;
 			
@@ -293,13 +293,14 @@ public class RUStoreClient {
 
 				byte[] buffer = new byte[length] ;
 
-				while ((bytesRead < length) && ((count = clientSocket.getInputStream().read(buffer)) > 0)) {
+				while ((bytesRead < length)) {
 
-					baos.write(buffer, 0, count) ;
+					count = clientSocket.getInputStream().read(buffer, bytesRead, (length - bytesRead)) ;
 					bytesRead += count ;
 
 				}
 
+				baos.write(buffer) ;
 				fullBytes = baos.toByteArray() ;
 
 				bos.write(fullBytes) ;

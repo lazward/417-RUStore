@@ -162,15 +162,17 @@ public class RUStoreServer {
 							//FileOutputStream fos = new FileOutputStream("./outputfiles/idk.jpg") ;
 							//BufferedOutputStream bos = new BufferedOutputStream(fos) ;
 	
-							while ((bytesRead < length) && (count = clientSocket.getInputStream().read(buffer)) > 0) {
+							while ((bytesRead < length)) {
 								
-								baos.write(buffer, 0, count) ;
+								count = clientSocket.getInputStream().read(buffer, bytesRead, (length - bytesRead)) ;
 								//bos.write(fullBytes, 0, count) ;
 								//out.write(fullBytes, 0, count) ;
 								bytesRead += count ;
 								//System.out.println("count = " + count + " bytesRead = " + bytesRead);
 	
 							}
+
+							baos.write(buffer) ;
 	
 							//System.out.println("done");
 	
